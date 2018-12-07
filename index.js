@@ -9,7 +9,18 @@ const STATE = {
     {name: 'milk', checked: true},
     {name: 'bread', checked: false}
   ],
-  checkedItems: 'all'
+  checkedItems: 'all',
+  filteredTerm: '',
+  filtered: function() {
+    return Object.values(STATE.STORE)
+      .filter(values => values.name === this.filteredTerm)
+      .reduce((obj, values) => {
+        let arr = [];
+        obj = values;
+        arr.push(obj);
+        return arr;
+      }, []);
+  }
 };
 
 const {STORE} = STATE;
@@ -42,10 +53,6 @@ function generateItemElement(item, itemIndex, template) {
     </li>`;
 }
 
-function getCheckedOrUnchecked() {
-  
-}
-
 function generateShoppingItemsString(shoppingList) {
   let remaining = shoppingList.filter(item => item.checked === false);
   let answer = [];
@@ -70,7 +77,6 @@ function renderShoppingList() {
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
 }
-
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
@@ -126,6 +132,35 @@ function handleDeleteItemClicked() {
   });
 }
 
+function handleSearchBoxEntry() {
+  $('.js-shopping-list-entry').on('input', function(e) {
+    let enteredValue = $(e.target).val().toLowerCase();
+    STATE.filteredTerm = enteredValue;
+    console.log(STATE.filteredTerm);
+    // return enteredValue;
+    return searchFilter();
+  });
+}
+
+function searchFilter(searchTerm) {
+  // We can try and find based on an indexOf(searchTerm)
+  $('.js-search-button').on('click', function(e) {
+    e.preventDefault();
+    renderSearchList();
+  })
+
+}
+
+function renderSearchList() {
+  // render the shopping list in the DOM on search
+  console.log('`renderSearchList` ran');
+  const searchedList = STATE.filtered();
+  const shoppingListItemsString = generateShoppingItemsString(searchedList);
+
+  // insert that HTML into the DOM
+  $('.js-shopping-list').html(shoppingListItemsString);
+}
+
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -136,6 +171,8 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleCheckedBoxTicked();
+  handleSearchBoxEntry();
+  searchFilter();
 }
 
 // when the page loads, call `handleShoppingList`
