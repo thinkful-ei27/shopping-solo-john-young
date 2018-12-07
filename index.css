@@ -49,3 +49,7 @@
   .shopping-item__checked {
     text-decoration: line-through;
   }
+
+  #checkbox {
+    margin: 16px;
+  }

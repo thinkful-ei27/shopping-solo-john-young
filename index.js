@@ -2,13 +2,30 @@
 
 /* global $ */
 
-const STORE = [
-  {name: 'apples', checked: false},
-  {name: 'oranges', checked: false},
-  {name: 'milk', checked: true},
-  {name: 'bread', checked: false}
-];
+const STATE = {
+  STORE: [
+    {name: 'apples', checked: false},
+    {name: 'oranges', checked: false},
+    {name: 'milk', checked: true},
+    {name: 'bread', checked: false}
+  ],
+  checkedItems: 'all'
+};
 
+const {STORE} = STATE;
+let {checkedItems} = STATE;
+
+function handleCheckedBoxTicked() {
+  $('#checkbox').on('click', function(e) {
+    let checkboxState = $(e.target).prop('checked');
+    if (checkboxState) {
+      checkedItems = 'remaining';
+    } else {
+      checkedItems = 'all';
+    }
+    renderShoppingList();
+  });
+}
 
 function generateItemElement(item, itemIndex, template) {
   return `
@@ -25,11 +42,21 @@ function generateItemElement(item, itemIndex, template) {
     </li>`;
 }
 
+function getCheckedOrUnchecked() {
+  
+}
 
 function generateShoppingItemsString(shoppingList) {
-  console.log('Generating shopping list element');
+  let remaining = shoppingList.filter(item => item.checked === false);
+  let answer = [];
 
-  const items = shoppingList.map((item, index) => generateItemElement(item, index));
+  if (checkedItems === 'remaining') {
+    answer = remaining;
+  } else {
+    answer = shoppingList;
+  }
+
+  const items = answer.map((item, index) => generateItemElement(item, index));
   
   return items.join('');
 }
@@ -108,6 +135,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleCheckedBoxTicked();
 }
 
 // when the page loads, call `handleShoppingList`
