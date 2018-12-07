@@ -173,11 +173,11 @@ function bindEditableSpan() {
 }
 
 function clickToChangeName() {
-  $('.js-shopping-item').on('blur', function(e) {
-    const itemIndex = getItemIndexFromElement(event.currentTarget);
+  $('ul').on('blur', '.js-shopping-item', function(e) {
+    const itemIndex = getItemIndexFromElement(e.target);
     let changedText = $(e.target).text();
-    console.log('click to change is working', changedText, itemIndex);
     modifyItemName(itemIndex, changedText);
+    console.log(STORE);
     renderShoppingList();
   });
 }
