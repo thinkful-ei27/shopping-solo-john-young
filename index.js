@@ -41,7 +41,7 @@ function handleCheckedBoxTicked() {
 function generateItemElement(item, itemIndex, template) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}" contenteditable="true">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -143,7 +143,6 @@ function handleSearchBoxEntry() {
 }
 
 function searchFilter(searchTerm) {
-  // We can try and find based on an indexOf(searchTerm)
   $('.js-search-button').on('click', function(e) {
     e.preventDefault();
     renderSearchList();
@@ -161,6 +160,28 @@ function renderSearchList() {
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
+function modifyItemName(priorName, newName) {
+  return STORE[priorName].name = newName;
+}
+
+function bindEditableSpan() {
+  $('span').bind('dblclick', function() {
+    $(this).attr('contentEditable', true);
+  }).blur(function() {
+    $(this).attr('contentEditable', false);
+  });
+}
+
+function clickToChangeName() {
+  $('.js-shopping-item').on('blur', function(e) {
+    const itemIndex = getItemIndexFromElement(event.currentTarget);
+    let changedText = $(e.target).text();
+    console.log('click to change is working', changedText, itemIndex);
+    modifyItemName(itemIndex, changedText);
+    renderShoppingList();
+  });
+}
+
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -173,6 +194,8 @@ function handleShoppingList() {
   handleCheckedBoxTicked();
   handleSearchBoxEntry();
   searchFilter();
+  clickToChangeName();
+  bindEditableSpan();
 }
 
 // when the page loads, call `handleShoppingList`
